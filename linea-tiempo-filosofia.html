@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0">
+<title>Línea del tiempo de la filosofía</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+  :root{
+    color-scheme:light;
+    --paper:#FAFAF7; --ink:#2B2D3A; --ink-2:#6B6F80; --line:#E3E2DC; --panel:#FFFFFF;
+    --e1:#C77D3A; --e2:#B24A63; --e3:#2E6F9E; --e4:#6B54B8; --e5:#2F7D5B;
+    --e1-soft:#F8DFC4; --e2-soft:#F6D3DB; --e3-soft:#D2E6F3; --e4-soft:#E0D9F4; --e5-soft:#D4ECDD;
+    --e1-tint:#FDF3E8; --e2-tint:#FCEEF1; --e3-tint:#EDF5FA; --e4-tint:#F3F0FB; --e5-tint:#EEF7F1;
+    --dim:.25;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;font-size:17px;line-height:1.45;padding-block:28px 48px;padding-inline:clamp(16px,3vw,40px);margin:0}
+  .wrap{max-width:1180px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:22px}
+  h1{font-family:"Fraunces",Georgia,serif;font-weight:700;font-size:clamp(1.9rem,3.6vw,2.8rem);line-height:1.02;margin:0;text-wrap:balance}
+  h1 small{display:block;font-family:"Source Sans 3",sans-serif;font-weight:400;font-size:1rem;color:var(--ink-2);margin-top:8px;max-width:60ch}
+  .controls{display:flex;gap:8px;flex-wrap:wrap}
+  .btn{font:600 .85rem "Source Sans 3",sans-serif;letter-spacing:.03em;text-transform:uppercase;border:1.5px solid var(--ink);background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+  .btn[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+  .btn:focus-visible{outline:2px solid var(--e3);outline-offset:2px}
+
+  /* ---- Regla a escala real ---- */
+  .scale{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px 8px;overflow-x:auto}
+  .scale svg{display:block;min-width:760px;width:100%;height:auto}
+  .tick{font:400 11px "Source Sans 3",sans-serif;fill:var(--ink-2)}
+  .era-lbl{font:700 11px "Source Sans 3",sans-serif;letter-spacing:.08em;text-transform:uppercase}
+  .mark{font:600 12px "Source Sans 3",sans-serif;fill:var(--ink)}
+  .brace{fill:none;stroke:var(--ink);stroke-width:1.3}
+  .brace-lbl{font:600 14px "Fraunces",Georgia,serif;fill:var(--ink);font-style:italic}
+
+  /* ---- Épocas ---- */
+  .eras{display:flex;flex-direction:column;gap:18px;margin-top:22px;position:relative}
+  .era{--c:var(--ink);--soft:var(--line);--tint:var(--panel);
+       display:grid;grid-template-columns:minmax(260px,34%) 1fr;gap:0;background:var(--tint);border:1px solid var(--soft);border-radius:18px;overflow:hidden;transition:opacity .2s}
+  .era.muted{opacity:var(--dim)}
+  .era .side{padding:22px 24px;display:flex;flex-direction:column;gap:10px;background:var(--soft);cursor:pointer}
+  .era .side:focus-visible{outline:2px solid var(--c);outline-offset:-4px}
+  .era .kicker{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font:800 .8rem "Source Sans 3",sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
+  .era .kicker span{font-weight:600;letter-spacing:0;text-transform:none;color:var(--ink-2);font-variant-numeric:tabular-nums}
+  .era .emblem{width:100%;max-width:230px;aspect-ratio:160/92;color:var(--c);margin:4px auto 2px}
+  .era .emblem svg{width:100%;height:100%;display:block}
+  .era .q{font-family:"Fraunces",Georgia,serif;font-size:clamp(1.15rem,1.8vw,1.45rem);line-height:1.22;font-weight:600;margin:0;text-wrap:balance}
+  .era .q em{display:block;font-weight:400;font-style:italic;font-size:.9rem;line-height:1.35;color:var(--ink-2);margin-top:8px;font-family:"Source Sans 3",sans-serif}
+  .era .people{padding:20px 22px;display:flex;flex-wrap:wrap;gap:10px;align-content:center;align-items:center}
+  .chip{display:flex;align-items:center;gap:10px;background:var(--panel);border:1.5px solid var(--soft);border-radius:999px;padding:6px 14px 6px 6px;cursor:default;transition:opacity .2s, transform .15s}
+  .chip.course{border-color:var(--c)}
+  .chip.muted{opacity:var(--dim)}
+  .chip .av{width:42px;height:42px;border-radius:50%;background:var(--soft);color:var(--c);font:700 1rem "Fraunces",Georgia,serif;display:grid;place-items:center;flex:none}
+  .chip.course .av{background:var(--c);color:#fff}
+  .chip .n{font-weight:700;font-size:1.05rem;line-height:1.1}
+  .chip .d{font-size:.8rem;color:var(--ink-2);font-variant-numeric:tabular-nums;line-height:1.1;margin-top:2px}
+  .chip .note{font-size:.72rem;color:var(--ink-2);font-style:italic}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.9rem;color:var(--ink-2);margin-top:18px;align-items:center}
+  .legend .k{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;margin-right:6px;vertical-align:middle;font:700 .7rem "Fraunces",serif}
+  .legend .k.c{background:var(--e3);color:#fff}
+  .legend .k.r{background:var(--e3-soft);color:var(--e3)}
+
+  @media (max-width:760px){.era{grid-template-columns:1fr}.era .side{padding:18px}.era .emblem{max-width:180px}}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+  @media print{
+    @page{size:A4 portrait;margin:10mm}
+    body{padding:0;font-size:11px}
+    .controls,.legend .noprint{display:none}
+    .scale{overflow:visible;border:none;padding:0}
+    .scale svg{min-width:0}
+    .eras{gap:8px;margin-top:10px}
+    .era{break-inside:avoid;grid-template-columns:32% 1fr;opacity:1!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .era .side{padding:10px 12px}
+    .era .emblem{max-width:110px}
+    .era .q{font-size:1rem}
+    .era .people{padding:10px;gap:6px}
+    .chip{padding:3px 10px 3px 3px;opacity:1!important}
+    .chip .av{width:24px;height:24px;font-size:.75rem}
+    .chip .n{font-size:.82rem}.chip .d{font-size:.68rem}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Línea del tiempo de la filosofía
+      <small>Cinco épocas, cinco preguntas. Los autores con el círculo relleno son los que aparecen en el curso.</small>
+    </h1>
+    <div class="controls">
+      <button class="btn" id="btnCourse" aria-pressed="false" type="button">Solo los del curso</button>
+      <button class="btn" id="btnAll" type="button">Ver todo</button>
+    </div>
+  </header>
+
+  <div class="scale"><svg id="scale" viewBox="0 0 1200 178" role="img" aria-label="La misma línea a escala real: del 600 a.C. a hoy"></svg></div>
+
+  <div class="eras" id="eras"></div>
+
+  <div class="legend">
+    <span><span class="k c">P</span>Se estudia este curso</span>
+    <span><span class="k r">E</span>Referencia para situarse</span>
+    <span class="noprint">Toca una época para aislarla.</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const ERAS=[
+    {id:1,name:"Antigua",span:"s. VI a.C. – s. V d.C.",from:-620,to:500,
+     q:"¿De qué está hecho el mundo y qué permanece bajo el cambio?",q2:"Con Sócrates, el giro: ¿cómo hay que vivir y qué es la justicia? Al final: ¿cómo se alcanza la serenidad?"},
+    {id:2,name:"Medieval",span:"s. V – s. XV",from:500,to:1450,
+     q:"¿Cómo se llevan la fe y la razón?",q2:"¿Se puede demostrar que Dios existe? ¿Qué es un universal? Es la época en que nace la universidad."},
+    {id:3,name:"Moderna",span:"s. XV – s. XVIII",from:1450,to:1800,
+     q:"¿Qué puedo conocer con certeza, y cómo?",q2:"El sujeto y el método. En política: ¿por qué obedecer a un Estado?"},
+    {id:4,name:"Siglo XIX",span:"1800 – 1900",from:1800,to:1900,
+     q:"¿De dónde vienen de verdad nuestras ideas y nuestros valores?",q2:"La historia, la sociedad y la sospecha. ¿Qué es el progreso?"},
+    {id:5,name:"Siglos XX–XXI",span:"1900 – hoy",from:1900,to:2030,
+     q:"¿Qué es la mente? ¿Quién es el otro? ¿Qué es justo cuando no todos pensamos igual?",q2:"Tres frentes abiertos a la vez. La mitad de estos autores están vivos."}
+  ];
+  const P=[
+    {n:"Tales",b:-624,d:-546,e:1},{n:"Heráclito",b:-540,d:-480,e:1,course:1},{n:"Parménides",b:-515,d:-450,e:1,course:1},
+    {n:"Protágoras",b:-490,d:-420,e:1},{n:"Sócrates",b:-470,d:-399,e:1,course:1},{n:"Platón",b:-427,d:-347,e:1,course:1},
+    {n:"Aristóteles",b:-384,d:-322,e:1,course:1},{n:"Epicuro",b:-341,d:-270,e:1},{n:"Séneca",b:-4,d:65,e:1},
+    {n:"Agustín de Hipona",b:354,d:430,e:2},{n:"Averroes",b:1126,d:1198,e:2},{n:"Maimónides",b:1138,d:1204,e:2},
+    {n:"Tomás de Aquino",b:1225,d:1274,e:2},{n:"Ockham",b:1287,d:1347,e:2},
+    {n:"Maquiavelo",b:1469,d:1527,e:3},{n:"Hobbes",b:1588,d:1679,e:3,course:1},{n:"Descartes",b:1596,d:1650,e:3,course:1},
+    {n:"Spinoza",b:1632,d:1677,e:3,course:1},{n:"Locke",b:1632,d:1704,e:3,course:1},{n:"Berkeley",b:1685,d:1753,e:3,course:1},
+    {n:"Hume",b:1711,d:1776,e:3,course:1},{n:"Rousseau",b:1712,d:1778,e:3,course:1},{n:"Kant",b:1724,d:1804,e:3,course:1},
+    {n:"Hegel",b:1770,d:1831,e:4,course:1},{n:"Mill",b:1806,d:1873,e:4,course:1},{n:"Darwin",b:1809,d:1882,e:4,note:"naturalista"},
+    {n:"Kierkegaard",b:1813,d:1855,e:4},{n:"Marx",b:1818,d:1883,e:4,course:1},{n:"Nietzsche",b:1844,d:1900,e:4,course:1},
+    {n:"Wittgenstein",b:1889,d:1951,e:5},{n:"Ryle",b:1900,d:1976,e:5,course:1},{n:"Sartre",b:1905,d:1980,e:5,course:1},
+    {n:"Levinas",b:1906,d:1995,e:5,course:1},{n:"Berlin",b:1909,d:1997,e:5},{n:"Turing",b:1912,d:1954,e:5,course:1},
+    {n:"Rawls",b:1921,d:2002,e:5},{n:"MacIntyre",b:1929,d:2025,e:5,course:1},{n:"Searle",b:1932,d:null,e:5,course:1},
+    {n:"Nagel",b:1937,d:null,e:5,course:1},{n:"Parfit",b:1942,d:2017,e:5,course:1},{n:"Singer",b:1946,d:null,e:5,course:1},
+    {n:"Butler",b:1956,d:null,e:5,course:1},{n:"Chalmers",b:1966,d:null,e:5,course:1}
+  ];
+  const ICON={
+    1:`<svg viewBox="0 0 160 92" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 30 L80 8 L146 30 Z"/><rect x="18" y="30" width="124" height="8"/><rect x="28" y="40" width="12" height="36"/><rect x="52" y="40" width="12" height="36"/><rect x="76" y="40" width="12" height="36"/><rect x="100" y="40" width="12" height="36"/><rect x="124" y="40" width="12" height="36"/><rect x="14" y="78" width="132" height="8"/></svg>`,
+    2:`<svg viewBox="0 0 160 92" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M40 90 V46 Q40 14 80 6 Q120 14 120 46 V90"/><circle cx="80" cy="44" r="16"/><path d="M80 28v32M64 44h32M69 33l22 22M91 33L69 55"/><path d="M52 90V66q0-10 10-10t10 10v24M88 90V66q0-10 10-10t10 10v24"/></svg>`,
+    3:`<svg viewBox="0 0 160 92" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 70 L108 26"/><path d="M24 62 L34 82"/><path d="M104 18 L118 44 L128 39 L114 13 Z"/><path d="M60 52 L44 86 M60 52 L76 86"/><circle cx="140" cy="16" r="3" fill="currentColor"/><circle cx="128" cy="62" r="2.5" fill="currentColor"/><circle cx="20" cy="22" r="2" fill="currentColor"/><path d="M143 40l3 6 6 1-4 4 1 6-6-3-6 3 1-6-4-4 6-1z" fill="currentColor" stroke="none"/></svg>`,
+    4:`<svg viewBox="0 0 160 92" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"><path d="M14 88V50l26 14V50l26 14V50l26 14V22h18v66Z"/><rect x="116" y="30" width="12" height="20"/><path d="M122 26c-8-8 4-12-2-20M94 18c-8-8 4-12-2-20" stroke-linecap="round"/><circle cx="138" cy="70" r="12"/><circle cx="138" cy="70" r="4"/><path d="M138 54v-5M138 91v-5M122 70h-5M159 70h-5M127 59l-4-4M153 85l-4-4M149 59l4-4M123 85l4-4" stroke-linecap="round"/></svg>`,
+    5:`<svg viewBox="0 0 160 92" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M62 82c-14 0-24-10-22-24-8-6-6-20 4-24 0-12 12-20 24-14 8-8 24-6 30 4 12-2 22 8 18 20 8 6 6 20-4 24 0 12-14 20-26 12-8 6-18 4-24 2Z"/><path d="M70 20v62M70 44h22M92 44l8-8M70 62h-20M50 62l-6 6"/><circle cx="104" cy="32" r="3" fill="currentColor"/><circle cx="40" cy="72" r="3" fill="currentColor"/><path d="M118 84h30M118 74h16M118 64h24" stroke-width="2.5"/></svg>`
+  };
+  const fmt=y=>y<0?Math.abs(y)+" a.C.":String(y);
+  const life=p=>p.d==null?`n. ${p.b}`:`${fmt(p.b)} – ${fmt(p.d)}`;
+  const NS="http://www.w3.org/2000/svg";
+  function el(t,a,txt){const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);if(txt!=null)n.textContent=txt;return n;}
+
+  // ---- Regla a escala real (solo tres marcas) ----
+  const svg=document.getElementById('scale'), L=40, R=1160, y0=-650, y1=2030, Y=52;
+  const X=y=>L+(y-y0)/(y1-y0)*(R-L);
+  svg.appendChild(el('text',{x:L,y:16,class:'tick','font-size':'12','font-weight':'600'},'La misma línea a escala real: cada milímetro vale los mismos años'));
+  ERAS.forEach(e=>{
+    svg.appendChild(el('rect',{x:X(e.from),y:Y-14,width:X(e.to)-X(e.from),height:28,rx:6,fill:`var(--e${e.id}-soft)`,class:'band','data-era':e.id}));
+    if(e.id<=3) svg.appendChild(el('text',{x:X(e.from)+8,y:Y+4,class:'era-lbl',fill:`var(--e${e.id})`},e.name.toUpperCase()));
+  });
+  [-600,-400,-200,0,200,400,600,800,1000,1200,1400,1600,1800,2000].forEach(y=>{
+    svg.appendChild(el('line',{x1:X(y),x2:X(y),y1:Y+14,y2:Y+19,stroke:'var(--ink-2)'}));
+    svg.appendChild(el('text',{x:X(y),y:Y+32,class:'tick','text-anchor':'middle'},fmt(y)));
+  });
+  [["Platón",-387],["Descartes",1623],["Nagel",1980]].forEach(([n,y],i)=>{
+    const x=X(y);
+    svg.appendChild(el('circle',{cx:x,cy:Y,r:6,fill:'var(--ink)',stroke:'var(--panel)','stroke-width':2}));
+    svg.appendChild(el('text',{x:x,y:Y-22,class:'mark','text-anchor':i===2?'end':'middle'},n));
+  });
+  const b1=X(-387), b2=X(1623), by=Y+62;
+  svg.appendChild(el('path',{d:`M${b1},${by-8} v8 H${b2} v-8`,class:'brace'}));
+  svg.appendChild(el('text',{x:(b1+b2)/2,y:by+20,class:'brace-lbl','text-anchor':'middle'},'De Platón a Descartes: unos 2.000 años'));
+  const c1=X(1650), c2=X(1980);
+  svg.appendChild(el('path',{d:`M${c1},${by+22} v8 H${c2} v-8`,class:'brace'}));
+  svg.appendChild(el('text',{x:c2,y:by+50,class:'brace-lbl','text-anchor':'end','font-size':'13'},'De Descartes a Nagel: unos 300'));
+
+  // ---- Épocas ----
+  const box=document.getElementById('eras');
+  ERAS.forEach(e=>{
+    const d=document.createElement('section');
+    d.className='era'; d.dataset.era=e.id;
+    d.style.setProperty('--c',`var(--e${e.id})`); d.style.setProperty('--soft',`var(--e${e.id}-soft)`); d.style.setProperty('--tint',`var(--e${e.id}-tint)`);
+    const chips=P.filter(p=>p.e===e.id).map(p=>`<div class="chip${p.course?' course':''}" data-course="${p.course?1:0}" title="${p.n} · ${life(p)}"><span class="av">${p.n[0]}</span><span><div class="n">${p.n}</div><div class="d">${life(p)}${p.note?` · <span class="note">${p.note}</span>`:''}</div></span></div>`).join('');
+    d.innerHTML=`<div class="side" tabindex="0" role="button" aria-pressed="false">
+        <div class="kicker">${e.name}<span>${e.span}</span></div>
+        <div class="emblem">${ICON[e.id]}</div>
+        <p class="q">${e.q}<em>${e.q2}</em></p>
+      </div>
+      <div class="people">${chips}</div>`;
+    box.appendChild(d);
+  });
+
+  let active=null, onlyCourse=false;
+  function apply(){
+    document.querySelectorAll('.era').forEach(d=>{
+      const on=active==null||+d.dataset.era===active;
+      d.classList.toggle('muted',!on);
+      d.querySelector('.side').setAttribute('aria-pressed',active!=null&&+d.dataset.era===active);
+    });
+    document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('muted',onlyCourse&&c.dataset.course!=='1'));
+    document.querySelectorAll('.band').forEach(b=>b.style.opacity=(active==null||+b.dataset.era===active)?1:.3);
+    document.getElementById('btnCourse').setAttribute('aria-pressed',onlyCourse);
+  }
+  function toggle(id){active=(active===id)?null:id;apply();}
+  box.addEventListener('click',ev=>{const s=ev.target.closest('.side');if(s)toggle(+s.parentElement.dataset.era);});
+  box.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){const s=ev.target.closest('.side');if(s){ev.preventDefault();toggle(+s.parentElement.dataset.era);}}});
+  svg.addEventListener('click',ev=>{const b=ev.target.closest('.band');if(b)toggle(+b.dataset.era);});
+  document.getElementById('btnCourse').addEventListener('click',()=>{onlyCourse=!onlyCourse;apply();});
+  document.getElementById('btnAll').addEventListener('click',()=>{onlyCourse=false;active=null;apply();});
+  apply();
+})();
+</script>
+</body></html>
